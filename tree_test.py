@@ -77,16 +77,16 @@ class ArvoreBinaria:
                 fila.append(no.direita)
 
 
-# Função para sortear 20 números de 0 a 100
+# Sortear 20 números
 import random
 numeros = random.sample(range(101), 20)
 
-# Criar e preencher a árvore
+# Criar e preencher
 arvore = ArvoreBinaria()
 for numero in numeros:
     arvore.inserir(numero)
 
-# Imprimir pré-ordem, in-ordem, pós-ordem e em nível
+# Pré-ordem, in-ordem, pós-ordem, Nível
 print("Árvore original:")
 print("Pré-ordem:", end=' ')
 arvore.preordem(arvore.raiz)
@@ -97,12 +97,12 @@ arvore.posordem(arvore.raiz)
 print("\nEm nível:", end=' ')
 arvore.em_nivel()
 
-# Remover 5 elementos
+# Remover
 elementos_a_remover = random.sample(numeros, 5)
 for elemento in elementos_a_remover:
     arvore.remover(elemento)
 
-# Imprimir novamente após a remoção
+# Imprimir denovo
 print("\n\nÁrvore após remoção de 5 elementos:")
 print("Pré-ordem:", end=' ')
 arvore.preordem(arvore.raiz)
