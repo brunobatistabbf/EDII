@@ -1,4 +1,4 @@
-#.youtube.com/watch?v=6E169kShoNU&list=PL5TJqBvpXQv7ipm2exZbbqwpFZc-TZ80s&index=2&ab_channel=ProgramaçãoDinâmica
+
 class Node():
     def __init__(self, data):
         self.data = data
