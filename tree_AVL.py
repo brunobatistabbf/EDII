@@ -1,120 +1,110 @@
 import time
 
 class No:
-    def __init__(self, valor):
-        self.valor = valor
+    def __init__(self, data):
+        self.data = data
         self.esquerda = None
         self.direita = None
         self.altura = 1
 
-class AVLTree:
-    def __init__(self):
-        self.raiz = None
+def altura(no):
+    if no is None:
+        return 0
+    return no.altura
 
-    def altura(self, no):
-        if not no:
-            return 0
-        return no.altura
+def atualiza_altura(no):
+    no.altura = 1 + max(altura(no.esquerda), altura(no.direita))
 
-    def atualizar_altura(self, no):
-        if not no:
-            return 0
-        no.altura = 1 + max(self.altura(no.esquerda), self.altura(no.direita))
+def rotacao_direita(z):
+    y = z.esquerda
+    T3 = y.direita
 
-    def rotacao_direita(self, z):
-        y = z.esquerda
-        T2 = y.direita
+    y.direita = z
+    z.esquerda = T3
 
-        y.direita = z
-        z.esquerda = T2
+    atualiza_altura(z)
+    atualiza_altura(y)
 
-        z.altura = 1 + max(self.altura(z.esquerda), self.altura(z.direita))
-        y.altura = 1 + max(self.altura(y.esquerda), self.altura(y.direita))
+    return y
 
-        return y
+def rotacao_esquerda(y):
+    x = y.direita
+    T2 = x.esquerda
 
-    def rotacao_esquerda(self, y):
-        x = y.direita
-        T2 = x.esquerda
+    x.esquerda = y
+    y.direita = T2
 
-        x.esquerda = y
-        y.direita = T2
+    atualiza_altura(y)
+    atualiza_altura(x)
 
-        y.altura = 1 + max(self.altura(y.esquerda), self.altura(y.direita))
-        x.altura = 1 + max(self.altura(x.esquerda), self.altura(x.direita))
+    return x
 
-        return x
+def rotacao_esquerda_direita(z):
+    z.esquerda = rotacao_esquerda(z.esquerda)
+    return rotacao_direita(z)
 
-    def fator_balanceamento(self, no):
-        if not no:
-            return 0
-        return self.altura(no.esquerda) - self.altura(no.direita)
+def rotacao_direita_esquerda(y):
+    y.direita = rotacao_direita(y.direita)
+    return rotacao_esquerda(y)
 
-    def inserir(self, no, valor):
-        if not no:
-            return No(valor)
+def fator_balanceamento(no):
+    if no is None:
+        return 0
+    return altura(no.esquerda) - altura(no.direita)
 
-        if valor < no.valor:
-            no.esquerda = self.inserir(no.esquerda, valor)
-        elif valor > no.valor:
-            no.direita = self.inserir(no.direita, valor)
+def inserir(raiz, data):
+    if raiz is None:
+        return No(data)
+
+    if data < raiz.data:
+        raiz.esquerda = inserir(raiz.esquerda, data)
+    elif data > raiz.data:
+        raiz.direita = inserir(raiz.direita, data)
+    else:
+        return raiz
+
+    atualiza_altura(raiz)
+
+    fator = fator_balanceamento(raiz)
+
+    if fator > 1:
+        if data < raiz.esquerda.data:
+            return rotacao_direita(raiz)
         else:
-            return no  # Ignorar duplicatas
+            return rotacao_esquerda_direita(raiz)
 
-        self.atualizar_altura(no)
+    if fator < -1:
+        if data > raiz.direita.data:
+            return rotacao_esquerda(raiz)
+        else:
+            return rotacao_direita_esquerda(raiz)
 
-        balanceamento = self.fator_balanceamento(no)
+    return raiz
 
-        # Casos de desbalanceamento
-        if balanceamento > 1:
-            if valor < no.esquerda.valor:
-                return self.rotacao_direita(no)
-            else:
-                no.esquerda = self.rotacao_esquerda(no.esquerda)
-                return self.rotacao_direita(no)
+def imprimir_em_ordem(raiz):
+    if raiz:
+        imprimir_em_ordem(raiz.esquerda)
+        print(raiz.data, end=' ')
+        imprimir_em_ordem(raiz.direita)
 
-        if balanceamento < -1:
-            if valor > no.direita.valor:
-                return self.rotacao_esquerda(no)
-            else:
-                no.direita = self.rotacao_direita(no.direita)
-                return self.rotacao_esquerda(no)
-
-        return no
-
-    def imprimir_inordem(self, no):
-        if no:
-            self.imprimir_inordem(no.esquerda)
-            print(no.valor, end=' ')
-            self.imprimir_inordem(no.direita)
-
-def inserir_avl(arvore, numeros):
-    for numero in numeros:
-        arvore.raiz = arvore.inserir(arvore.raiz, numero)
-
-def main():
-    arvore_avl = AVLTree()
-
-    # Leitura dos dados do arquivo
+if __name__ == "__main__":
+    # Leitura dos dados do arquivo e construção da árvore AVL
     with open('dados100_mil.txt', 'r') as arquivo:
         numeros = [int(numero) for numero in arquivo.read().strip('[]').split(', ')]
 
-    inicio_total = time.time()
+    raiz = None
+    inicio_tempo = time.time()
 
-    inicio_insercao_avl = time.time()
-    inserir_avl(arvore_avl, numeros)
-    tempo_insercao_avl = time.time() - inicio_insercao_avl
+    for numero in numeros:
+        raiz = inserir(raiz, numero)
 
-    inicio_impressao_avl = time.time()
-    arvore_avl.imprimir_inordem(arvore_avl.raiz)
-    tempo_impressao_avl = time.time() - inicio_impressao_avl
+    fim_tempo_insercao = time.time()
+    tempo_insercao = fim_tempo_insercao - inicio_tempo
+    print(f'Tempo de inserção: {tempo_insercao} segundos')
 
-    tempo_total = time.time() - inicio_total
-
-    print("\n\nTempo de inserção com AVL:", tempo_insercao_avl, "segundos")
-    print("Tempo de impressão com AVL:", tempo_impressao_avl, "segundos")
-    print("Tempo total de execução:", tempo_total, "segundos")
-
-if __name__ == "__main__":
-    main()
-
+    # Impressão em ordem dos dados (comentado para economizar tempo de execução)
+    inicio_tempo_impressao = time.time()
+    imprimir_em_ordem(raiz)
+    fim_tempo_impressao = time.time()
+    tempo_impressao = fim_tempo_impressao - inicio_tempo_impressao
+    print(f'\nTempo de impressão em ordem: {tempo_impressao} segundos')
