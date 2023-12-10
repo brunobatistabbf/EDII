@@ -56,16 +56,13 @@ class AVLTree:
 
         balance = self.balance_factor(node)
 
-        # Left Heavy
+
         if balance > 1:
-            # Left-Right Case
             if self.balance_factor(node.left) < 0:
                 node.left = self.rotate_left(node.left)
             return self.rotate_right(node)
 
-        # Right Heavy
         if balance < -1:
-            # Right-Left Case
             if self.balance_factor(node.right) > 0:
                 node.right = self.rotate_right(node.right)
             return self.rotate_left(node)
@@ -86,7 +83,6 @@ class AVLTree:
         return self.balance(root)
 
     def insert_file_data(self):
-        import time
         with open('dados100_mil.txt', 'r') as arquivo:
             data = [int(numero) for numero in arquivo.read().strip('[]').split(', ')]
 
@@ -127,13 +123,12 @@ class AVLTree:
         elif key > root.key:
             root.right = self.remove(root.right, key)
         else:
-            # Node with only one child or no child
             if root.left is None:
                 return root.right
             elif root.right is None:
                 return root.left
 
-            # Node with two children, get the inorder successor
+
             root.key = self.get_min_value_node(root.right).key
             root.right = self.remove(root.right, root.key)
 
